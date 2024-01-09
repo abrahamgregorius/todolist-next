@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isEditOpen, setIsEditOpen] = useState(false)
   const [title, setTitle] = useState("")
   const [desc, setDesc] = useState("")
   const [todos, setTodos] = useState([])
@@ -39,7 +40,7 @@ export default function Home() {
                     </Box>
 
                     <Box className="flex items-center">
-                      <Button className="ml-2" colorScheme={'yellow'}>Edit</Button>
+                      <Button className="ml-2" onClick={() => setIsEditOpen(true)} colorScheme={'yellow'}>Edit</Button>
                       <Button className="ml-2" onClick={() => {
                         todos.splice(index, 1)
                         setTodos(todos)
@@ -53,6 +54,7 @@ export default function Home() {
         </CardBody>
       </Card>
 
+      {/* Modal create */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -71,6 +73,39 @@ export default function Home() {
 
           <ModalFooter>
             <Button colorScheme='red' mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button colorScheme={'blue'} onClick={() => {
+              let temp = {title: title,desc: desc}
+              setTodos([...todos, temp])
+              onClose()
+              localStorage.setItem('data', JSON.stringify([...todos, temp]))
+            }}>
+            Save
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal edit */}
+      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton/>
+          <ModalBody>
+            <FormControl>
+              <FormLabel>Title</FormLabel>
+              <Input placeholder="Enter the title" onChange={(e) => {setTitle(e.target.value)}} type="text"></Input>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Description</FormLabel>
+              <Input placeholder="Enter the description" onChange={(e) => {setDesc(e.target.value)}} type="text"></Input>
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='red' mr={3} onClick={() => setIsEditOpen(false)}>
               Close
             </Button>
             <Button colorScheme={'blue'} onClick={() => {
